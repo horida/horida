@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tonarten-Helfer</title>
+    <style>
+        :root {
+            --main-bg-color: #f0f2f5;
+            --key-selector-bg: #ffffff;
+            --key-selector-active-bg: #007bff;
+            --key-selector-active-color: #ffffff;
+            --disabled-opacity: 0.5;
+            --disabled-white-bg: #d1d5db; /* Hellgrau für inaktive weiße Tasten */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--main-bg-color);
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 1. Oben: Die Auswahlknöpfe */
+        .key-selectors {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .selector-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .key-selectors button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 65px;
+            height: 65px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: var(--key-selector-bg);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .key-signature {
+            font-size: 0.8em;
+            font-weight: normal;
+            color: #d9534f;
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .key-selectors button:hover {
+            border-color: #007bff;
+        }
+
+        .key-selectors button.active {
+            background-color: var(--key-selector-active-bg);
+            color: var(--key-selector-active-color);
+            border-color: var(--key-selector-active-bg);
+        }
+
+        .key-selectors button.active .key-signature {
+            color: #fff;
+        }
+
+        /* 2. Mitte: Das Klavier */
+        .piano-container {
+            width: 100%;
+            padding-bottom: 35%;
+            position: relative;
+        }
+        
+        .piano {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .key {
+            position: relative;
+            border: 1px solid #999;
+            box-sizing: border-box;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .key.disabled { 
+            opacity: var(--disabled-opacity);
+        }
+
+        .key.white {
+            flex-grow: 1;
+            background: #f9f9f9;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .key.white.disabled {
+            background-color: var(--disabled-white-bg);
+            opacity: 1;
+            border-color: #b0b4b8;
+        }
+
+        .key.black {
+            position: absolute;
+            background: #333;
+            width: 10%;
+            height: 60%;
+            z-index: 2;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        
+        .key[data-note="C#"] { left: 14.28%; transform: translateX(-50%); }
+        .key[data-note="D#"] { left: 28.57%; transform: translateX(-50%); }
+        .key[data-note="F#"] { left: 57.14%; transform: translateX(-50%); }
+        .key[data-note="G#"] { left: 71.42%; transform: translateX(-50%); }
+        .key[data-note="A#"] { left: 85.71%; transform: translateX(-50%); }
+
+        /* 3. Unten: Das Referenzbild */
+        .reference-image {
+            display: block;
+            width: 100%;
+            max-width: 500px; /* Maximale Breite des Bildes */
+            margin: 40px auto 0 auto; /* Abstand nach oben und zentrieren */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="key-selectors" id="key-selectors">
+            <div class="selector-row">
+                <button data-key="C_maj"><div class="key-signature"></div>C</button>
+                <button data-key="G_maj"><div class="key-signature"></div>G</button>
+                <button data-key="D_maj"><div class="key-signature"></div>D</button>
+                <button data-key="A_maj"><div class="key-signature"></div>A</button>
+                <button data-key="E_maj"><div class="key-signature"></div>E</button>
+                <button data-key="B_maj"><div class="key-signature"></div>H</button>
+                <button data-key="F_sharp_maj"><div class="key-signature"></div>Fis</button>
+            </div>
+            <div class="selector-row">
+                <button data-key="C_maj"><div class="key-signature"></div>C</button>
+                <button data-key="F_maj"><div class="key-signature"></div>F</button>
+                <button data-key="A_sharp_maj"><div class="key-signature"></div>B</button>
+                <button data-key="D_sharp_maj"><div class="key-signature"></div>Es</button>
+                <button data-key="G_sharp_maj"><div class="key-signature"></div>As</button>
+                <button data-key="C_flat_maj"><div class="key-signature"></div>Des</button>
+                <button data-key="G_flat_maj"><div class="key-signature"></div>Ges</button>
+            </div>
+        </div>
+
+        <div class="piano-container">
+            <div class="piano" id="piano">
+                <div class="key white" data-note="C"></div>
+                <div class="key white" data-note="D"></div>
+                <div class="key white" data-note="E"></div>
+                <div class="key white" data-note="F"></div>
+                <div class="key white" data-note="G"></div>
+                <div class="key white" data-note="A"></div>
+                <div class="key white" data-note="B"></div>
+                <div class="key black" data-note="C#"></div>
+                <div class="key black" data-note="D#"></div>
+                <div class="key black" data-note="F#"></div>
+                <div class="key black" data-note="G#"></div>
+                <div class="key black" data-note="A#"></div>
+            </div>
+        </div>
+
+        <img src="Circle_of_fifths_deluxe_4_de_s.svg" alt="Quintenzirkel als Referenz" class="reference-image">
+
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const KEY_DATA = {
+        C_maj: { notes: ['C','D','E','F','G','A','B'] },
+        G_maj: { notes: ['G','A','B','C','D','E','F#'] },
+        D_maj: { notes: ['D','E','F#','G','A','B','C#'] },
+        A_maj: { notes: ['A','B','C#','D','E','F#','G#'] },
+        E_maj: { notes: ['E','F#','G#','A','B','C#','D#'] },
+        B_maj: { notes: ['B','C#','D#','E','F#','G#','A#'] },
+        F_sharp_maj: { notes: ['F#','G#','A#','B','C#','D#','E#'] },
+        C_sharp_maj: { notes: ['C#','D#','E#','F#','G#','A#','B#'] },
+        F_maj: { notes: ['F','G','A','A#','C','D','E'] },
+        A_sharp_maj: { notes: ['A#','C','D','D#','F','G','A'] },
+        D_sharp_maj: { notes: ['D#','F','G','G#','A#','C','D'] },
+        G_sharp_maj: { notes: ['G#','A#','C','C#','D#','F','G'] },
+        C_flat_maj: { notes: ['B','C#','D#','E','F#','G#','A#'] },
+        G_flat_maj: { notes: ['F#','G#','A#','B','C#','D#','F'] }
+    };
+    
+    const SIGNATURE_SYMBOLS = {
+        C_maj: '', G_maj: '♯', D_maj: '♯♯', A_maj: '♯♯♯', E_maj: '♯♯♯♯', B_maj: '♯♯♯♯♯', F_sharp_maj: '♯♯♯♯♯♯',
+        C_sharp_maj: '♯♯♯♯♯♯♯', F_maj: '♭', A_sharp_maj: '♭♭', D_sharp_maj: '♭♭♭', G_sharp_maj: '♭♭♭♭',
+        C_flat_maj: '♭♭♭♭♭', G_flat_maj: '♭♭♭♭♭♭'
+    };
+
+    const pianoKeys = document.querySelectorAll('.key');
+    const keySelectors = document.getElementById('key-selectors');
+
+    function populateSignatures() {
+        keySelectors.querySelectorAll('button').forEach(button => {
+            const keyId = button.dataset.key;
+            const signatureDiv = button.querySelector('.key-signature');
+            if (keyId && signatureDiv && SIGNATURE_SYMBOLS[keyId] !== undefined) {
+                signatureDiv.innerHTML = SIGNATURE_SYMBOLS[keyId];
+            }
+        });
+    }
+
+    function updatePiano(keyId) {
+        if (!KEY_DATA[keyId]) return;
+
+        const keyInfo = KEY_DATA[keyId];
+        const activeNotes = new Set(keyInfo.notes);
+        
+        const noteMap = { 'E#': 'F', 'B#': 'C' };
+        for (const [enharmonic, actual] of Object.entries(noteMap)) {
+            if (activeNotes.has(enharmonic)) {
+                activeNotes.delete(enharmonic);
+                activeNotes.add(actual);
+            }
+        }
+        
+        pianoKeys.forEach(key => {
+            const note = key.dataset.note;
+            key.classList.toggle('disabled', !activeNotes.has(note));
+        });
+        
+        keySelectors.querySelectorAll('button').forEach(button => {
+            button.classList.toggle('active', button.dataset.key === keyId);
+        });
+    }
+
+    keySelectors.addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (button && button.dataset.key) {
+            updatePiano(button.dataset.key);
+        }
+    });
+
+    populateSignatures();
+    updatePiano('C_maj');
+});
+</script>
+
+</body>
+</html>
