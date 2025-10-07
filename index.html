@@ -56,8 +56,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 55px;
-            height: 65px;
+            width: 65px;
+            /* NEU: min-height statt height, damit der Knopf wachsen kann */
+            min-height: 65px;
+            padding: 5px 0; /* Etwas Padding für die flexible Höhe */
             font-size: 1.2em;
             font-weight: bold;
             border: 1px solid #ccc;
@@ -71,8 +73,10 @@
             font-size: 0.8em;
             font-weight: normal;
             color: #d9534f;
-            height: 20px;
-            line-height: 20px;
+            /* NEU: Höhe entfernt, Zeilenhöhe angepasst für Umbrüche */
+            line-height: 1.2;
+            text-align: center;
+            min-height: 20px; /* Stellt sicher, dass auch leere Bereiche Platz haben */
         }
 
         .key-selectors button:hover {
@@ -147,8 +151,8 @@
         .reference-image {
             display: block;
             width: 100%;
-            max-width: 500px; /* Maximale Breite des Bildes */
-            margin: 40px auto 0 auto; /* Abstand nach oben und zentrieren */
+            max-width: 500px;
+            margin: 40px auto 0 auto;
         }
     </style>
 </head>
@@ -194,7 +198,7 @@
             </div>
         </div>
 
-        <img src="Circle_of_fifths_deluxe_4_de_s.svg" alt="Quintenzirkel als Referenz" class="reference-image">
+        <img src="quintenzirkel.svg" alt="Quintenzirkel als Referenz" class="reference-image">
 
     </div>
 
@@ -227,12 +231,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const pianoKeys = document.querySelectorAll('.key');
     const keySelectors = document.getElementById('key-selectors');
 
+    // NEU: Funktion, die einen String in Blöcke von 3 Zeichen aufteilt
+    // und mit <br> verbindet.
+    function formatSignatureString(symbols) {
+        if (!symbols) {
+            return '';
+        }
+
+        const len = symbols.length;
+
+        if (len === 4) {
+            // Spezialfall für 4: 2 oben, 2 unten
+            return symbols.slice(0, 2) + '<br>' + symbols.slice(2);
+        } else if (len > 3) {
+            // Alle anderen Fälle mit mehr als 3 (5, 6, 7): 3 pro Zeile
+            return symbols.match(/.{1,3}/g).join('<br>');
+        } else {
+            // Fälle mit 3 oder weniger: keine Änderung
+            return symbols;
+        }
+    }
+
+
     function populateSignatures() {
         keySelectors.querySelectorAll('button').forEach(button => {
             const keyId = button.dataset.key;
             const signatureDiv = button.querySelector('.key-signature');
             if (keyId && signatureDiv && SIGNATURE_SYMBOLS[keyId] !== undefined) {
-                signatureDiv.innerHTML = SIGNATURE_SYMBOLS[keyId];
+                // NEU: Formattierungs-Funktion wird hier aufgerufen
+                signatureDiv.innerHTML = formatSignatureString(SIGNATURE_SYMBOLS[keyId]);
             }
         });
     }
